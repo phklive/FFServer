@@ -1,5 +1,7 @@
 import { Resolvers } from '../../generated/graphql'
-import { MyContext } from '../../types'
+import { createToken } from '../../utils/auth'
+import { MyContext } from '../../utils/types'
+import bcrypt from 'bcrypt'
 
 export const userResolver: Resolvers<MyContext> = {
 	Query: {
@@ -11,16 +13,19 @@ export const userResolver: Resolvers<MyContext> = {
 			})
 		},
 
-		async user(_, args, { db }) {
-			const user = await db.user.findFirst({
+		async user(_, args, { db, user }) {
+			if (!user.id) throw new Error('You are not authenticated.')
+
+			const connectedUser = await db.user.findFirst({
 				where: {
-					id: '621b94e80d6b70c6240768f1',
+					id: user.id,
 				},
 				include: {
 					posts: true,
 				},
 			})
-			return user
+
+			return connectedUser
 		},
 	},
 
@@ -39,16 +44,36 @@ export const userResolver: Resolvers<MyContext> = {
 					name,
 				},
 			})
-			if (nameExists) throw new Error('Name already in use.')
 
-			return await db.user.create({
+			if (nameExists) throw new Error('Username already in use.')
+
+			const hashedPassword = bcrypt.hashSync(password, 12)
+
+			const user = await db.user.create({
 				data: {
-					id: 'test',
 					email,
 					name,
-					password,
+					password: hashedPassword,
 				},
 			})
+
+			return createToken(user.id)
+		},
+
+		async loginUser(_, { email, password }, { db }) {
+			const user = await db.user.findFirst({
+				where: {
+					email,
+				},
+			})
+
+			if (!user) throw new Error('Invalid credentials.')
+
+			const rightPassword = bcrypt.compareSync(password, user.password)
+
+			if (!rightPassword) throw new Error('Invalid credentials.')
+
+			return createToken(user.id)
 		},
 	},
 }

@@ -1,5 +1,5 @@
 import { Resolvers } from '../../generated/graphql'
-import { MyContext } from '../../types'
+import { MyContext } from '../../utils/types'
 
 export const postResolver: Resolvers<MyContext> = {
 	Query: {

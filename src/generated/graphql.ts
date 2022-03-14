@@ -18,7 +18,8 @@ export type Scalars = {
 export type Mutation = {
   __typename?: 'Mutation';
   createPost: Post;
-  createUser: User;
+  createUser: Scalars['String'];
+  loginUser: Scalars['String'];
 };
 
 
@@ -31,6 +32,12 @@ export type MutationCreatePostArgs = {
 export type MutationCreateUserArgs = {
   email: Scalars['String'];
   name: Scalars['String'];
+  password: Scalars['String'];
+};
+
+
+export type MutationLoginUserArgs = {
+  email: Scalars['String'];
   password: Scalars['String'];
 };
 
@@ -149,7 +156,8 @@ export type ResolversParentTypes = {
 
 export type MutationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createPost?: Resolver<ResolversTypes['Post'], ParentType, ContextType, RequireFields<MutationCreatePostArgs, 'body' | 'title'>>;
-  createUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'email' | 'name' | 'password'>>;
+  createUser?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'email' | 'name' | 'password'>>;
+  loginUser?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationLoginUserArgs, 'email' | 'password'>>;
 };
 
 export type PostResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {

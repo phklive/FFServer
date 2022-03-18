@@ -2,32 +2,78 @@ import { gql } from 'apollo-server-express'
 
 const typeDefs = gql`
 	type Query {
+		me: User
+		user(userId: String!): User!
 		users: [User!]!
-		user: User
-		posts: [Post!]!
-		post: Post
-		userPosts: [Post!]
+		userLikes(userId: String!): [Game!]
+		userGames(userId: String!): [Game!]
+		game(id: String!): Game!
+		games: [Game!]!
+		product(productId: String!): Product!
+		products: [Product!]!
 	}
 
 	type Mutation {
 		createUser(email: String!, name: String!, password: String!): String!
-		loginUser(email: String!, password: String!): String!
-		createPost(title: String!, body: String!): Post!
+		signInUser(email: String!, password: String!): String!
+		createGame(
+			product: InputProduct!
+			slots: Int!
+			players: [InputUser!]
+		): Product!
+		joinGame(gameId: String!, gameType: String!): Game!
+		like(gameId: String!): Game!
+		play(gameId: String!): Game!
 	}
 
 	type User {
 		id: String!
-		email: String!
 		name: String!
+		email: String!
 		password: String!
-		posts: [Post]
+		points: Int!
+		likes: [Game!]
+		games: [Game!]
 	}
 
-	type Post {
+	input InputUser {
+		id: String!
+		name: String!
+		email: String!
+		password: String!
+		points: Int!
+		likes: [InputGame!]
+		games: [InputGame!]
+	}
+
+	type Game {
+		id: String!
+		product: Product!
+		slots: Int!
+		players: [User!]
+	}
+
+	input InputGame {
+		id: String!
+		product: InputProduct!
+		slots: Int!
+		players: [InputUser!]
+	}
+
+	type Product {
 		id: String!
 		title: String!
-		body: String!
-		authorId: String!
+		description: String!
+		image: String!
+		price: Int!
+	}
+
+	input InputProduct {
+		id: String!
+		title: String!
+		description: String!
+		image: String!
+		price: Int!
 	}
 `
 

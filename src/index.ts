@@ -1,14 +1,16 @@
 import { ApolloServer } from 'apollo-server-express'
 import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core'
 import { PrismaClient } from '@prisma/client'
-import { userResolver } from './graphql/resolvers/User'
+// import { userResolver } from './graphql/resolvers/User'
 import { MyContext } from './utils/types'
-import { postResolver } from './graphql/resolvers/Post'
+// import { postResolver } from './graphql/Post'
 import jwt from 'express-jwt'
 import typeDefs from './graphql/typeDefs'
 import http from 'http'
 import express from 'express'
 import dotenv from 'dotenv'
+import { productResolver } from './graphql/resolvers/Post'
+import { userResolver } from './graphql/resolvers/User'
 dotenv.config()
 
 async function startApolloServer() {
@@ -23,7 +25,7 @@ async function startApolloServer() {
 	})
 
 	const server = new ApolloServer({
-		resolvers: [userResolver, postResolver],
+		resolvers: [userResolver, productResolver],
 		typeDefs,
 		plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 		context: ({ req }): MyContext => {

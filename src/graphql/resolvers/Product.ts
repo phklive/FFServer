@@ -1,41 +1,34 @@
-import { Resolvers } from '../../generated/graphql'
 import { MyContext } from '../../utils/types'
+import { Product } from '../../../db/schema'
+import { Resolvers } from '../../generated/graphql'
 
 export const productResolver: Resolvers<MyContext> = {
 	Query: {
-		async products(_, { search }, { db }) {
+		async products(_, { search }) {
 			if (search) {
-				return await db.product.findMany({
-					where: {
-						title: {
-							contains: search,
-							mode: 'insensitive',
-						},
-					},
+				return await Product.find({
+					$or: [
+						{ title: new RegExp(`${search}`, 'i') },
+						{ tags: new RegExp(`${search}`, 'i') },
+					],
 				})
 			}
-
-			return await db.product.findMany({})
+			return await Product.find({})
 		},
-
-		async product(_, { productId }, { db }) {
-			return await db.product.findFirst({
-				where: {
-					id: productId,
-				},
-			})
+		async product(_, { productId }) {
+			return await Product.findById(productId)
 		},
 	},
 	Mutation: {
-		async likeProduct(_, { productId }, { db, user }) {
-			return await db.product.update({
-				where: {
-					id: productId,
-				},
-				data: {
-					title: 'hello',
-				},
+		async createProduct(_, { title, price, description, image, tags }) {
+			const newProduct = new Product({
+				title,
+				price,
+				description,
+				image,
+				tags,
 			})
+			return await newProduct.save()
 		},
 	},
 }

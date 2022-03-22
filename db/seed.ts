@@ -1,30 +1,28 @@
-import { PrismaClient, Product } from '@prisma/client'
+import { Product, User } from './schema'
+
+import bcrypt from 'bcrypt'
+import connectToDB from './database'
 
 const seed = async () => {
-	const prisma = new PrismaClient()
+	connectToDB()
 
-	await prisma.game.deleteMany({})
-	await prisma.product.deleteMany({})
-	await prisma.user.deleteMany({})
+	await Product.deleteMany({})
+	await User.deleteMany({})
 
 	const users = [
 		{
 			points: 0,
 			email: 'phk@gmail.com',
 			name: 'phk',
-			password: 'phk',
+			password: bcrypt.hashSync('phk', 12),
 		},
 		{
 			points: 0,
 			email: 'tom@gmail.com',
 			name: 'tom',
-			password: 'tom',
+			password: bcrypt.hashSync('tom', 12),
 		},
 	]
-
-	const userList = await prisma.user.createMany({
-		data: users,
-	})
 
 	const products = [
 		{
@@ -51,6 +49,7 @@ const seed = async () => {
 				'https://images.unsplash.com/photo-1580273916550-e323be2ae537?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=928&q=80',
 			tags: ['car', 'bmw', 'outdoor'],
 		},
+
 		{
 			title: 'MacBook pro M1',
 			price: 1500,
@@ -59,6 +58,16 @@ const seed = async () => {
 				'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
 			tags: ['tech', 'apple', 'computer'],
 		},
+
+		{
+			title: 'Iphone 13 pro Max',
+			price: 1200,
+			description: 'Dummy description because i totally forgot lol.',
+			image:
+				'https://images.pexels.com/photos/11525164/pexels-photo-11525164.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500',
+			tags: ['tech', 'apple', 'smartphone'],
+		},
+
 		{
 			title: 'Sony A7 IV',
 			price: 4000,
@@ -77,12 +86,10 @@ const seed = async () => {
 		},
 	]
 
-	const productList = await prisma.product.createMany({
-		data: products,
-	})
+	const newUsers = await User.insertMany(users)
+	const newProducts = await Product.insertMany(products)
 
-	console.log('Users:', userList)
-	console.log('Products:', productList)
+	console.log(newUsers, newProducts)
 }
 
 seed()

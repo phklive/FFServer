@@ -1,7 +1,5 @@
 import { ApolloServer } from 'apollo-server-express'
 import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core'
-import { PrismaClient } from '@prisma/client'
-import { MyContext } from './utils/types'
 import jwt from 'express-jwt'
 import typeDefs from './graphql/typeDefs'
 import http from 'http'
@@ -9,12 +7,14 @@ import express from 'express'
 import dotenv from 'dotenv'
 import { productResolver } from './graphql/resolvers/Product'
 import { userResolver } from './graphql/resolvers/User'
+import connectToDB from '../db/database'
 dotenv.config()
 
 async function startApolloServer() {
 	const app = express()
-	const prisma = new PrismaClient()
 	const httpServer = http.createServer(app)
+
+	connectToDB()
 
 	const checkJwt = jwt({
 		secret: process.env.JWT_SECRET!,
@@ -26,9 +26,8 @@ async function startApolloServer() {
 		resolvers: [userResolver, productResolver],
 		typeDefs,
 		plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-		context: ({ req }): MyContext => {
+		context: ({ req }) => {
 			return {
-				db: prisma,
 				user: req.user || null,
 			}
 		},

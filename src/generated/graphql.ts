@@ -35,6 +35,7 @@ export type InputProduct = {
   id: Scalars['String'];
   image: Scalars['String'];
   price: Scalars['Int'];
+  tags: Array<Scalars['String']>;
   title: Scalars['String'];
 };
 
@@ -52,9 +53,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   createGame: Product;
   createUser: Scalars['String'];
-  joinGame: Game;
-  like: Game;
-  play: Game;
+  likeProduct: Product;
+  playGame: Game;
   signInUser: Scalars['String'];
 };
 
@@ -73,18 +73,12 @@ export type MutationCreateUserArgs = {
 };
 
 
-export type MutationJoinGameArgs = {
-  gameId: Scalars['String'];
-  gameType: Scalars['String'];
+export type MutationLikeProductArgs = {
+  productId: Scalars['String'];
 };
 
 
-export type MutationLikeArgs = {
-  gameId: Scalars['String'];
-};
-
-
-export type MutationPlayArgs = {
+export type MutationPlayGameArgs = {
   gameId: Scalars['String'];
 };
 
@@ -100,6 +94,7 @@ export type Product = {
   id: Scalars['String'];
   image: Scalars['String'];
   price: Scalars['Int'];
+  tags: Array<Scalars['String']>;
   title: Scalars['String'];
 };
 
@@ -108,7 +103,7 @@ export type Query = {
   game: Game;
   games: Array<Game>;
   me?: Maybe<User>;
-  product: Product;
+  product?: Maybe<Product>;
   products: Array<Product>;
   user: User;
   userGames?: Maybe<Array<Game>>;
@@ -127,6 +122,11 @@ export type QueryProductArgs = {
 };
 
 
+export type QueryProductsArgs = {
+  search?: InputMaybe<Scalars['String']>;
+};
+
+
 export type QueryUserArgs = {
   userId: Scalars['String'];
 };
@@ -139,6 +139,11 @@ export type QueryUserGamesArgs = {
 
 export type QueryUserLikesArgs = {
   userId: Scalars['String'];
+};
+
+
+export type QueryUsersArgs = {
+  userId?: InputMaybe<Scalars['String']>;
 };
 
 export type User = {
@@ -260,9 +265,8 @@ export type GameResolvers<ContextType = MyContext, ParentType extends ResolversP
 export type MutationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createGame?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationCreateGameArgs, 'product' | 'slots'>>;
   createUser?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'email' | 'name' | 'password'>>;
-  joinGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationJoinGameArgs, 'gameId' | 'gameType'>>;
-  like?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationLikeArgs, 'gameId'>>;
-  play?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationPlayArgs, 'gameId'>>;
+  likeProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationLikeProductArgs, 'productId'>>;
+  playGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationPlayGameArgs, 'gameId'>>;
   signInUser?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationSignInUserArgs, 'email' | 'password'>>;
 };
 
@@ -271,6 +275,7 @@ export type ProductResolvers<ContextType = MyContext, ParentType extends Resolve
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   image?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   price?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  tags?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -279,12 +284,12 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   game?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<QueryGameArgs, 'id'>>;
   games?: Resolver<Array<ResolversTypes['Game']>, ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  product?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<QueryProductArgs, 'productId'>>;
-  products?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
+  product?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryProductArgs, 'productId'>>;
+  products?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, Partial<QueryProductsArgs>>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<QueryUserArgs, 'userId'>>;
   userGames?: Resolver<Maybe<Array<ResolversTypes['Game']>>, ParentType, ContextType, RequireFields<QueryUserGamesArgs, 'userId'>>;
   userLikes?: Resolver<Maybe<Array<ResolversTypes['Game']>>, ParentType, ContextType, RequireFields<QueryUserLikesArgs, 'userId'>>;
-  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
+  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, Partial<QueryUsersArgs>>;
 };
 
 export type UserResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {

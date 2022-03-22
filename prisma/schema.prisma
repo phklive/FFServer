@@ -47,4 +47,5 @@ model Product {
   description String
   price Float
   image String
+  tags String[] 
 }

@@ -4,13 +4,13 @@ const typeDefs = gql`
 	type Query {
 		me: User
 		user(userId: String!): User!
-		users: [User!]!
+		users(userId: String): [User!]!
 		userLikes(userId: String!): [Game!]
 		userGames(userId: String!): [Game!]
 		game(id: String!): Game!
 		games: [Game!]!
-		product(productId: String!): Product!
-		products: [Product!]!
+		product(productId: String!): Product
+		products(search: String): [Product!]!
 	}
 
 	type Mutation {
@@ -21,9 +21,8 @@ const typeDefs = gql`
 			slots: Int!
 			players: [InputUser!]
 		): Product!
-		joinGame(gameId: String!, gameType: String!): Game!
-		like(gameId: String!): Game!
-		play(gameId: String!): Game!
+		likeProduct(productId: String!): Product!
+		playGame(gameId: String!): Game!
 	}
 
 	type User {
@@ -66,6 +65,7 @@ const typeDefs = gql`
 		description: String!
 		image: String!
 		price: Int!
+		tags: [String!]!
 	}
 
 	input InputProduct {
@@ -74,6 +74,7 @@ const typeDefs = gql`
 		description: String!
 		image: String!
 		price: Int!
+		tags: [String!]!
 	}
 `
 
